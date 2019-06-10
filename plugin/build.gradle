@@ -1,63 +1,105 @@
-apply plugin: 'groovy'
-jar {
-    manifest {
-        attributes "Implementation-Version": project.version.toString()
-    }
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+buildscript {
+  repositories {
+    jcenter()
+    google()
+    mavenLocal()
+  }
+  dependencies {
+    classpath plugs.kotlin
+  }
 }
 
+apply plugin: 'groovy'
+apply plugin: 'kotlin'
+apply plugin: "java-gradle-plugin"
 apply plugin: 'maven'
 
 repositories {
+  jcenter()
   mavenCentral()
 }
 
+final GENERATED_PACKAGE_NAME = "com.facebook.testing.screenshot.generated"
+final GENERATED_BUILD_DIR =
+    new File(
+        projectDir.absolutePath,
+        "src/generated/kotlin/${GENERATED_PACKAGE_NAME.replace('.', '/')}")
+
+task generateBuildConfig {
+  doLast {
+    GENERATED_BUILD_DIR.deleteDir()
+    GENERATED_BUILD_DIR.mkdirs()
+
+    final className = "ScreenshotTestBuildConfig"
+    final configClass = new File(GENERATED_BUILD_DIR, "${className}.kt")
+    BufferedWriter writer = configClass.newWriter()
+    try {
+      writer.writeLine("package $GENERATED_PACKAGE_NAME")
+      writer.writeLine("object $className { val VERSION = \"${project.version.toString()}\" }")
+      writer.flush()
+    } finally {
+      writer.close()
+    }
+  }
+}
+
 dependencies {
-    compile gradleApi()
-    compile group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.3.10.v20160621'
+  implementation deps.kotlinStdlib
+  compileOnly plugs.agp
 
-    testCompile group: 'org.mockito', name: 'mockito-all', version: '1.9.5'
-    testCompile 'com.android.tools.build:gradle:1.3.1'
-    testCompile 'org.hamcrest:hamcrest-all:1.3'
+
+  testImplementation deps.junit
+  testImplementation plugs.agp
+  testImplementation deps.mockito
+  testImplementation deps.hamcrest
 }
 
-repositories {
-    mavenCentral()
-}
-
-group='com.facebook.testing.screenshot'
+group = 'com.facebook.testing.screenshot'
 
 uploadArchives {
-    repositories {
-        mavenInstaller {
-        }
+  repositories {
+    mavenInstaller {
     }
+  }
+}
+
+compileKotlin {
+  dependsOn generateBuildConfig
+  sourceSets {
+    main {
+      kotlin.srcDirs += 'src/generated'
+    }
+  }
 }
 
 compileJava {
-    sourceSets {
-      main {
-         resources.srcDirs 'src/py'
-         resources {
-             exclude '**/*.pyc'
-             exclude '**/test_*.py'
-             exclude '**/fixtures/**'
-         }
+  sourceSets {
+    main {
+      resources.srcDirs 'src/py'
+      resources {
+        exclude '**/*.pyc'
+        exclude '**/test_*.py'
+        exclude '**/fixtures/**'
       }
     }
+  }
+}
+
+clean {
+  delete GENERATED_BUILD_DIR
 }
 
 task pyTests(type: Exec) {
-     workingDir file('./src/py')
-     commandLine 'python', '-m', 'unittest', 'discover'
+  workingDir file('./src/py')
+  commandLine 'python', '-m', 'unittest', 'discover'
 }
 
 task py3Tests(type: Exec) {
-     workingDir file('./src/py')
-     commandLine 'python3', '-m', 'unittest', 'discover'
+  workingDir file('./src/py')
+  commandLine 'python3', '-m', 'unittest', 'discover'
 }
 
-task sampleServer() << {
-  file = new File("plugin/src/py/android_screenshot_tests/fixtures/sdcard/screenshots/com.foo/screenshots-default/metadata.xml")
-}
 
-apply from: rootProject.file("release.gradle")
+apply from: rootProject.file("gradle/gradle-mvn-push.gradle")

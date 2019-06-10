@@ -1,153 +1,95 @@
-package com.facebook.testing.screenshot.build;
+/*
+ * Copyright 2014-present Facebook, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.facebook.testing.screenshot.build
 
-import org.junit.*
-import static org.junit.Assert.*
-import org.gradle.api.*
-import org.gradle.testfixtures.*
-import static org.hamcrest.Matchers.*
+import org.gradle.api.Project
+import org.gradle.api.Task
+import org.gradle.testfixtures.ProjectBuilder
+import org.junit.Before
+import org.junit.Test
 
-class ScreenshotsPluginForTest extends ScreenshotsPlugin {
-  static public runtimeDepAdded = false
-
-  @Override
-  void addRuntimeDep(Project project) {
-    runtimeDepAdded = true
-  }
-}
+import static org.junit.Assert.assertTrue
+import static org.junit.Assert.fail
 
 class ScreenshotsPluginTest {
-  def project;
+  Project project
 
   @Before
-  public void setup() {
+  void "setup"() {
+    final appId = "com.facebook.testing.screenshot.integration"
     project = ProjectBuilder.builder().build()
-  }
 
-  @After
-  public void tearDown() {
-    ScreenshotsPluginForTest.runtimeDepAdded = false
-  }
+    File manifest = new File(project.projectDir, "src/main/AndroidManifest.xml")
+    manifest.parentFile.mkdirs()
+    manifest.write("""<?xml version="1.0" encoding="utf-8"?>
+      <manifest package="$appId">
+        <application/>
+      </manifest>""")
 
-  def setupProject() {
-    // make an android manifest
-    def mainDir = project.projectDir.toString() + "/src/main/"
-    new File(mainDir).mkdirs()
-
-    println("making directories" + mainDir.toString())
-
-    def manifest = new File(mainDir + "/AndroidManifest.xml")
-
-    manifest.withWriter('utf-8') { writer ->
-      writer.writeLine('''<?xml version="1.0" encoding="utf-8"?>
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    package='com.facebook.testing.screenshot.examples'>
-   <uses-sdk android:minSdkVersion='9' android:targetSdkVersion="22" />
-   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-   <application>
-     <!-- not having an empty application block seems to cause the
-          instrumentation tests to fail with a ClassNotFoundException . -->
-   </application>
-</manifest>''')
-    }
+    project.getPluginManager().apply 'com.android.application'
+    project.getPluginManager().apply ScreenshotsPlugin
 
     project.repositories {
       mavenCentral()
     }
 
-
     project.android {
       compileSdkVersion 22
-      buildToolsVersion "23.0.1"
-    }
-  }
 
-  @Test
-  public void testHasTestDep() {
-    project.getPluginManager().apply 'com.android.library'
-    project.getPluginManager().apply ScreenshotsPluginForTest
-    setupProject()
-
-    assertTrue(ScreenshotsPluginForTest.runtimeDepAdded)
-    project.evaluate()
-  }
-
-  public void hasRuntimeDep(Project project) {
-    def depSet = project.getConfigurations().getByName('androidTestCompile').getAllDependencies()
-
-    def found = false
-    for (dep in depSet) {
-      if (dep.name == "core" && dep.group == 'com.facebook.testing.screenshot') {
-        found = true;
+      defaultConfig {
+        applicationId appId
       }
     }
-
-    assertTrue(found)
   }
 
   @Test
-  public void testApplicationHappyPath() {
-    project.getPluginManager().apply 'com.android.application'
-    project.getPluginManager().apply ScreenshotsPluginForTest
-    setupProject()
-
-    project.evaluate()
-  }
-
-  @Test
-  public void testUsesTestApk() {
-    def plugin = new ScreenshotsPlugin()
-    project.getPluginManager().apply 'com.android.application'
-    project.getPluginManager().apply ScreenshotsPluginForTest
-    setupProject()
+  void "Ensure core dependency added"() {
     project.evaluate()
 
-    assert plugin.getTestApkOutput(project).contains("androidTest")
+    def depSet = project.getConfigurations().getByName('androidTestImplementation').getAllDependencies()
+    for (dep in depSet) {
+      if (dep.name == "core" && dep.group == 'com.facebook.testing.screenshot') {
+        return
+      }
+    }
+    fail()
   }
 
   @Test
-  public void testCanSetApkTarget() {
-    def plugin = new ScreenshotsPlugin()
-    project.getPluginManager().apply 'com.android.application'
-    project.getPluginManager().apply ScreenshotsPluginForTest
-    setupProject()
-    project.screenshots.testApkTarget = "packageReleaseAndroidTest"
-
+  void "Ensure core dependency not added when requested"() {
+    project.screenshots {
+      addDeps = false
+    }
     project.evaluate()
-    def deps = project.tasks.getByPath("pullScreenshots").getDependsOn()
 
-    assert deps.contains("packageReleaseAndroidTest")
-  }
-
-  @Test
-  public void testAddRuntimeDep() {
-    project.getPluginManager().apply 'com.android.application'
-
-    def plugin = new ScreenshotsPlugin()
-    plugin.addRuntimeDep(project)
-
-    hasRuntimeDep(project);
-  }
-
-  @Test
-  public void testUsingAdbConfigurationThrowsError() {
-    project.getPluginManager().apply 'com.android.application'
-    project.getPluginManager().apply ScreenshotsPluginForTest
-
-    try {
-      project.screenshots.adb = "foobar"
-      fail("Expected exception")
-    } catch (IllegalArgumentException cause) {
-      assertThat(cause.getMessage(), containsString("deprecated"));
+    def depSet = project.getConfigurations().getByName('androidTestImplementation').getAllDependencies()
+    for (dep in depSet) {
+      if (dep.name == "core" && dep.group == 'com.facebook.testing.screenshot') {
+        fail()
+      }
     }
   }
 
   @Test
-  public void addsLocalScreenshotsTask() {
-    project.getPluginManager().apply 'com.android.application'
-    project.getPluginManager().apply ScreenshotsPluginForTest
-    setupProject()
+  void "Ensure tasks added"() {
+    project.evaluate()
 
-    assertTrue(project.tasks.pullScreenshotsFromDirectory instanceof Task)
+    assertTrue(project.tasks.pullDebugAndroidTestScreenshots instanceof Task)
+    assertTrue(project.tasks.runDebugAndroidTestScreenshotTest instanceof Task)
+    assertTrue(project.tasks.recordDebugAndroidTestScreenshotTest instanceof Task)
+    assertTrue(project.tasks.verifyDebugAndroidTestScreenshotTest instanceof Task)
   }
 }

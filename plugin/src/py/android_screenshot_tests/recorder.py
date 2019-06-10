@@ -1,12 +1,22 @@
 #!/usr/bin/env python
+# Copyright 2014-present Facebook, Inc.
 #
-# Copyright (c) 2014-present, Facebook, Inc.
-# All rights reserved.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# This source code is licensed under the BSD-style license found in the
-# LICENSE file in the root directory of this source tree. An additional grant
-# of patent rights can be found in the PATENTS file in the same directory.
+#   http://www.apache.org/licenses/LICENSE-2.0
 #
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 import xml.etree.ElementTree as ET
 import os
@@ -75,7 +85,7 @@ class Recorder:
     def _clean(self):
         if os.path.exists(self._output):
             shutil.rmtree(self._output)
-        os.mkdir(self._output)
+        os.makedirs(self._output)
 
     def _is_image_same(self, file1, file2):
         with Image.open(file1) as im1, Image.open(file2) as im2:
@@ -98,8 +108,7 @@ class Recorder:
             name = screenshot.find('name').text + ".png"
             actual = join(self._output, name)
             expected = join(self._realoutput, name)
-            if not self._is_image_same(expected,
-                                       actual):
+            if not self._is_image_same(expected, actual):
                 raise VerifyError("Image %s is not same as %s" % (actual, expected))
 
         shutil.rmtree(self._output)

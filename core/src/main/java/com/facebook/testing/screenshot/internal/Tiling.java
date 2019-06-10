@@ -1,17 +1,23 @@
-/**
- * Copyright (c) 2014-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
-
 package com.facebook.testing.screenshot.internal;
 
 /**
- * A 2D layout of image tiles. We represent images as strings which
- * can be looked up in an {@code AlbumImpl}
+ * A 2D layout of image tiles. We represent images as strings which can be looked up in an {@code
+ * AlbumImpl}
  */
 public class Tiling {
   private int mWidth;
@@ -22,6 +28,13 @@ public class Tiling {
     mWidth = width;
     mHeight = height;
     mContents = new String[width][height];
+  }
+
+  /** Convenience factory method for tests */
+  public static Tiling singleTile(String name) {
+    Tiling ret = new Tiling(1, 1);
+    ret.setAt(0, 0, name);
+    return ret;
   }
 
   public int getHeight() {
@@ -38,14 +51,5 @@ public class Tiling {
 
   public void setAt(int x, int y, String name) {
     mContents[x][y] = name;
-  }
-
-  /**
-   * Convenience factory method for tests
-   */
-  public static Tiling singleTile(String name) {
-    Tiling ret = new Tiling(1, 1);
-    ret.setAt(0, 0, name);
-    return ret;
   }
 }

@@ -1,53 +1,54 @@
-/**
- * Copyright (c) 2014-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
-
 package com.facebook.testing.screenshot.internal;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-
 import android.graphics.Bitmap;
+import java.io.IOException;
 
-/**
- * Stores metadata about an album of screenshots during an
- * instrumentation test run.
- */
+/** Stores metadata about an album of screenshots during an instrumentation test run. */
 public interface Album {
 
   /**
-   * Writes the bitmap corresponding to the screenshot with the name
-   * {@code name} in the {@code (tilei, tilej)} position.
+   * Writes the bitmap corresponding to the screenshot with the name {@code name} in the {@code
+   * (tilei, tilej)} position.
    */
-  public String writeBitmap(String name, int tilei, int tilej, Bitmap bitmap) throws IOException;
+  String writeBitmap(String name, int tilei, int tilej, Bitmap bitmap) throws IOException;
+
+  /** Call after all the screenshots are done. */
+  void flush();
+
+  /** Cleanup any disk state associated with this album. */
+  void cleanup();
 
   /**
-   * Call after all the screenshots are done.
-   */
-  public void flush();
-
-  /**
-   * Cleanup any disk state associated with this album.
-   */
-  public void cleanup();
-
-  /**
-   * Opens a stream to dump the view hierarchy into. This should be
-   * called before addRecord() is called for the given name.
+   * Opens a stream to dump the view hierarchy into. This should be called before addRecord() is
+   * called for the given name.
    *
-   * It is the callers responsibility to call {@code close()} on the
-   * returned stream.
+   * <p>It is the callers responsibility to call {@code close()} on the returned stream.
    */
-  public OutputStream openViewHierarchyFile(String name) throws IOException;
+  void writeViewHierarchyFile(String name, String data) throws IOException;
 
   /**
-   * This is called after every record is finally set up.
+   * Opens a stream to dump the accessibility issues into. This should be called before addRecord()
+   * is called for the given name.
+   *
+   * <p>It is the callers responsibility to call {@code close()} on the returned stream.
    */
-  public void addRecord(RecordBuilderImpl recordBuilder) throws IOException;
+  void writeAxIssuesFile(String name, String data) throws IOException;
+
+  /** This is called after every record is finally set up. */
+  void addRecord(RecordBuilderImpl recordBuilder) throws IOException;
 }

@@ -1,0 +1,48 @@
+# Copyright 2014-present Facebook, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+load("@fbsource//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+load("@fbsource//tools/build_defs/android:fb_java_library.bzl", "fb_java_library")
+
+fb_java_library(
+    name = "dexmaker",
+    visibility = ["PUBLIC"],
+    exported_deps = [
+        ":dexmaker-dx-prebuilt",
+        ":dexmaker-prebuilt",
+    ],
+)
+
+fb_native.prebuilt_jar(
+    name = "dexmaker-prebuilt",
+    binary_jar = ":dexmaker.jar",
+    visibility = ["PUBLIC"],
+)
+
+fb_native.remote_file(
+    name = "dexmaker.jar",
+    sha1 = "6d1ffc507a9b46bbc718d030a1c39b31c572d2b6",
+    url = "mvn:com.crittercism.dexmaker:dexmaker:jar:1.4",
+)
+
+fb_native.prebuilt_jar(
+    name = "dexmaker-dx-prebuilt",
+    binary_jar = ":dexmaker-dx.jar",
+    visibility = ["PUBLIC"],
+)
+
+fb_native.remote_file(
+    name = "dexmaker-dx.jar",
+    sha1 = "0b1146f23dc9f562f4da9a612e2f1980199c1221",
+    url = "mvn:com.crittercism.dexmaker:dexmaker-dx:jar:1.4",
+)
