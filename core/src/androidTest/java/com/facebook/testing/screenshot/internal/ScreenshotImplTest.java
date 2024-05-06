@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.facebook.testing.screenshot.internal;
 
 import static org.junit.Assert.assertEquals;
@@ -38,10 +39,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Enumeration;
 import java.util.Locale;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
@@ -107,24 +105,11 @@ public class ScreenshotImplTest {
     rb.record();
     mScreenshot.flush();
 
-    ZipFile bundle =
-        new ZipFile(
-            new File(mScreenshotDirectories.get("verify-in-test"), "screenshot_bundle.zip"));
-    Enumeration<? extends ZipEntry> entries = bundle.entries();
-    ZipEntry hierarchyEntry = null;
-    while (entries.hasMoreElements()) {
-      ZipEntry entry = entries.nextElement();
-      if (entry.getName().equals("blahblah_dump.json")) {
-        hierarchyEntry = entry;
-        break;
-      }
-    }
+    String fileName =
+        new File(mScreenshotDirectories.get("verify-in-test"), "blahblah_dump.json")
+            .getAbsolutePath();
 
-    if (hierarchyEntry == null) {
-      throw new IllegalStateException("No hierarchy file found");
-    }
-
-    InputStream is = bundle.getInputStream(hierarchyEntry);
+    InputStream is = new FileInputStream(fileName);
 
     StringBuilder builder = new StringBuilder();
     byte[] buffer = new byte[8 * 1024];

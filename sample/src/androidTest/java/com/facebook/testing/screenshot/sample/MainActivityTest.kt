@@ -1,28 +1,43 @@
-/**
- * Copyright (c) 2014-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
- * This source code is licensed under the license found in the
- * LICENSE-examples file in the root directory of this source tree.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.testing.screenshot.sample
 
-import android.support.test.espresso.Espresso.onView
-import android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
-import android.support.test.espresso.action.ViewActions.click
-import android.support.test.espresso.matcher.ViewMatchers.isDisplayed
-import android.support.test.espresso.matcher.ViewMatchers.withId
-import android.support.test.rule.ActivityTestRule
 import android.view.View
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.rule.ActivityTestRule
 import com.facebook.testing.screenshot.Screenshot
 import org.hamcrest.core.AllOf.allOf
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
 class MainActivityTest {
   @get:Rule
   var activityTestRule = ActivityTestRule<MainActivity>(MainActivity::class.java, false, false)
+
+  @Before
+  fun before() {
+    InstrumentationRegistry.getInstrumentation().getUiAutomation()
+  }
 
   @Test
   fun testScreenshotEntireActivity() {
@@ -68,5 +83,11 @@ class MainActivityTest {
     val activity = activityTestRule.launchActivity(intent)
 
     Screenshot.snapActivity(activity).record()
+  }
+
+  @Test
+  fun testScreenshotEntireActivityWithoutAccessibilityMetadata() {
+    val activity = activityTestRule.launchActivity(null)
+    Screenshot.snapActivity(activity).setIncludeAccessibilityInfo(false).record()
   }
 }

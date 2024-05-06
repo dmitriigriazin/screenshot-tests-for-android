@@ -1,3 +1,40 @@
+0.15.0 (Feb 2 2022)
+------
+- Python 3 support
+- Added option to specify pulling a `tar` bundle instead of individual files via `bundleResults`. This is useful for reducing the time it takes to pull a large amount of screenshots. It will also help if you experience ADB connection flakiness.
+
+0.14.0 (Apr 22 2021)
+------
+- Added test orchestrator support
+- Switched away from xml to json for metadata files
+- Support for Gradle 7
+
+0.13.0 (Jul 8 2020)
+------
+- Made accessibility node information optional
+- Bugfixes surrounding obtaining accessibility node information
+
+0.12.0 (Mar 4 2020)
+------
+- Added the ability to generate a diff between the old version of a screenshot and the new output in the html report. Currently only works with a configured test image API
+- Added support for AGP 3.6 + Gradle 6.2.x
+
+0.11.0 (Oct 17 2019)
+------
+- Replaced direct usages of deprecated Gradle APIs
+- Adopted the Contributor Covenant
+- Added `failureDir` which saves the expected, actual and diff images of each failing test when verification fails.
+
+0.10.0 (Jun 11 2019)
+------
+- Added batch downloading of screenshot images instead of pulling individual files
+- Added Accessibility hierarchy information
+- Added ability to specify max sizes for images
+- Fixed addDeps functionality parameter in the plugin
+- Fixed referenceDir functionality in the plugin
+- Fixed an issue on Samsung devices where a crash would occur when faking a WindowAttachment
+- Migrated to AndroidX
+
 0.9.0 (Apr 1 2019)
 -----
 - Added a setMaxPixels method to the record builder interface to allow for really large images

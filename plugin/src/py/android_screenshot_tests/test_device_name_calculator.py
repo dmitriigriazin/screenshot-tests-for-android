@@ -1,4 +1,17 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import subprocess
 import sys
 import unittest
@@ -12,21 +25,20 @@ else:
 
 
 class TestDeviceNameCalculator(unittest.TestCase):
-
     def test_API_19_GP_XXHDPI_1080x1920_arm64_v8a_esES(self):
         def mock_data(parameters):
-            if 'ro.build.version.sdk' in parameters:
-                return '19'
-            elif 'com.google.android.gms' in parameters:
-                return 'package:/data/app/com.google.android.gms-pHwJaHhvXiRvuTo2Qxdbww==/base.apk'
-            elif 'density' in parameters:
-                return 'Physical density: 420'
-            elif 'size' in parameters:
-                return 'Physical size: 1080x1920'
-            elif 'ro.product.cpu.abi' in parameters:
-                return 'arm64-v8a'
-            elif 'persist.sys.locale' in parameters:
-                return 'es-ES'
+            if "ro.build.version.sdk" in parameters:
+                return "19"
+            elif "com.google.android.gms" in parameters:
+                return "package:/data/app/com.google.android.gms-pHwJaHhvXiRvuTo2Qxdbww==/base.apk"
+            elif "density" in parameters:
+                return "Physical density: 420"
+            elif "size" in parameters:
+                return "Physical size: 1080x1920"
+            elif "ro.product.cpu.abi" in parameters:
+                return "arm64-v8a"
+            elif "persist.sys.locale" in parameters:
+                return "es-ES"
             return None
 
         adb_executor = MagicMock()
@@ -40,18 +52,18 @@ class TestDeviceNameCalculator(unittest.TestCase):
 
     def test_API_23_NO_GP_XXHDPI_1080x1920_arm64_v8a_esES(self):
         def mock_data(parameters):
-            if 'ro.build.version.sdk' in parameters:
-                return '23'
-            elif 'com.google.android.gms' in parameters:
+            if "ro.build.version.sdk" in parameters:
+                return "23"
+            elif "com.google.android.gms" in parameters:
                 return None
-            elif 'density' in parameters:
-                return 'Physical density: 420'
-            elif 'size' in parameters:
-                return 'Physical size: 1080x1920'
-            elif 'ro.product.cpu.abi' in parameters:
-                return 'arm64-v8a'
-            elif 'persist.sys.locale' in parameters:
-                return 'es-ES'
+            elif "density" in parameters:
+                return "Physical density: 420"
+            elif "size" in parameters:
+                return "Physical size: 1080x1920"
+            elif "ro.product.cpu.abi" in parameters:
+                return "arm64-v8a"
+            elif "persist.sys.locale" in parameters:
+                return "es-ES"
             return None
 
         adb_executor = MagicMock()
@@ -65,20 +77,20 @@ class TestDeviceNameCalculator(unittest.TestCase):
 
     def test_API_25_NO_GP_XXHDPI_1080x1920_x86_esES(self):
         def mock_data(parameters):
-            if 'ro.build.version.sdk' in parameters:
-                return '25'
-            elif 'com.google.android.gms' in parameters:
+            if "ro.build.version.sdk" in parameters:
+                return "25"
+            elif "com.google.android.gms" in parameters:
                 return None
-            elif 'density' in parameters:
-                return 'Physical density: 420'
-            elif 'size' in parameters:
-                return 'Physical size: 1080x1920'
-            elif 'ro.product.cpu.abi' in parameters:
-                return 'x86'
-            elif 'persist.sys.locale' in parameters:
+            elif "density" in parameters:
+                return "Physical density: 420"
+            elif "size" in parameters:
+                return "Physical size: 1080x1920"
+            elif "ro.product.cpu.abi" in parameters:
+                return "x86"
+            elif "persist.sys.locale" in parameters:
                 return None
-            elif 'ro.product.locale' in parameters:
-                return 'es-ES'
+            elif "ro.product.locale" in parameters:
+                return "es-ES"
             return None
 
         adb_executor = MagicMock()
@@ -92,7 +104,7 @@ class TestDeviceNameCalculator(unittest.TestCase):
 
     def test_density_10_to_LDPI(self):
         def mock_data(parameters):
-            return 'Physical density: 10'
+            return "Physical density: 10"
 
         adb_executor = MagicMock()
         adb_executor.execute.side_effect = mock_data
@@ -105,7 +117,7 @@ class TestDeviceNameCalculator(unittest.TestCase):
 
     def test_density_140_to_MDPI(self):
         def mock_data(parameters):
-            return 'Physical density: 140'
+            return "Physical density: 140"
 
         adb_executor = MagicMock()
         adb_executor.execute.side_effect = mock_data
@@ -118,7 +130,7 @@ class TestDeviceNameCalculator(unittest.TestCase):
 
     def test_density_200_to_HDPI(self):
         def mock_data(parameters):
-            return 'Physical density: 200'
+            return "Physical density: 200"
 
         adb_executor = MagicMock()
         adb_executor.execute.side_effect = mock_data
@@ -131,7 +143,7 @@ class TestDeviceNameCalculator(unittest.TestCase):
 
     def test_density_250_to_XHDPI(self):
         def mock_data(parameters):
-            return 'Physical density: 250'
+            return "Physical density: 250"
 
         adb_executor = MagicMock()
         adb_executor.execute.side_effect = mock_data
@@ -144,7 +156,7 @@ class TestDeviceNameCalculator(unittest.TestCase):
 
     def test_density_340_to_XXHDPI(self):
         def mock_data(parameters):
-            return 'Physical density: 340'
+            return "Physical density: 340"
 
         adb_executor = MagicMock()
         adb_executor.execute.side_effect = mock_data
@@ -157,7 +169,7 @@ class TestDeviceNameCalculator(unittest.TestCase):
 
     def test_density_500_to_XXXHDPI(self):
         def mock_data(parameters):
-            return 'Physical density: 500'
+            return "Physical density: 500"
 
         adb_executor = MagicMock()
         adb_executor.execute.side_effect = mock_data
@@ -171,8 +183,7 @@ class TestDeviceNameCalculator(unittest.TestCase):
     def test_absent_gms_gracefully_handled(self):
         adb_executor = MagicMock()
         adb_executor.execute.side_effect = subprocess.CalledProcessError(
-            returncode=1,
-            cmd=["irrelevant"]
+            returncode=1, cmd=["irrelevant"]
         )
 
         device_calculator = DeviceNameCalculator(adb_executor)

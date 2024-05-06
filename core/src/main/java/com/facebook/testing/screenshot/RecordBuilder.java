@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.facebook.testing.screenshot;
 
 import android.graphics.Bitmap;
@@ -46,6 +47,14 @@ public interface RecordBuilder {
   RecordBuilder setGroup(String groupName);
 
   /**
+   * Enables or disables extra information attached to the metadata generated related to
+   * accessibility information.
+   *
+   * @param includeAccessibilityInfo
+   */
+  RecordBuilder setIncludeAccessibilityInfo(boolean includeAccessibilityInfo);
+
+  /**
    * Stops the recording and returns the generated bitmap, possibly compressed.
    *
    * <p>You cannot call this after record(), nor can you call record() after this call.
@@ -56,9 +65,10 @@ public interface RecordBuilder {
    * Set the maximum number of pixels this screenshot should produce. Producing any number higher
    * will throw an exception.
    *
-   * @param maxPixels Maximum number of pixels this screenshot should produce. <= 0 for no limit.
+   * @param maxPixels Maximum number of pixels this screenshot should produce. Specify zero or a
+   *     negative number for no limit.
    */
-  public RecordBuilder setMaxPixels(long maxPixels);
+  RecordBuilder setMaxPixels(long maxPixels);
 
   /** Finish the recording. */
   void record();
